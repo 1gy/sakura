@@ -1,0 +1,9 @@
+{
+	"name": "sakura-dev",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/jckimble/devcontainer-features/ngrok:3": {}
+	},
+	"onCreateCommand": "corepack enable && corepack enable npm"
+}
