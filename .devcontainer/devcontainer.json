@@ -5,5 +5,11 @@
 		"ghcr.io/devcontainers/features/node:1": {},
 		"ghcr.io/jckimble/devcontainer-features/ngrok:3": {}
 	},
-	"onCreateCommand": "corepack enable && corepack enable npm"
+	"onCreateCommand": "corepack enable && corepack enable npm",
+
+	"customizations": {
+		"vscode": {
+			"extensions": ["biomejs.biome"]
+		}
+	}
 }
