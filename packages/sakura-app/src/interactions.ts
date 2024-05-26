@@ -13,7 +13,7 @@ app.post(
 	}),
 	async (c) => {
 		const interaction = (await c.req.json()) as Interaction;
-		return c.json(processInteraction(interaction));
+		return c.json(await processInteraction(interaction));
 	},
 );
 
