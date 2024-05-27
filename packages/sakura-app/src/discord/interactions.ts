@@ -24,6 +24,16 @@ export type ApplicationCommandInteraction = {
 	application_id: Snowflake;
 	token: string;
 	version: number;
+	data: {
+		id: Snowflake;
+		name: string;
+		type: number;
+		options?: {
+			name: string;
+			type: number;
+			value: string;
+		}[];
+	};
 	// TODO
 };
 
@@ -78,7 +88,10 @@ export type PongInteractionResponse = {
 
 export type ChannelMessageWithSourceInteractionResponse = {
 	type: InteractionResponseType.ChannelMessageWithSource;
-	// TODO
+	data: {
+		content?: string;
+		// TODO
+	};
 };
 
 export type DeferredChannelMessageWithSourceInteractionResponse = {
