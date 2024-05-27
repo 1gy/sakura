@@ -83,11 +83,15 @@ const handleTalk = async (
 	interaction: ApplicationCommandInteraction,
 	env: AppBindings,
 ): Promise<void> => {
-	const message = interaction.data.options?.[0]?.value ?? "";
+	try {
+		const message = interaction.data.options?.[0]?.value ?? "";
 
-	const update = patchContent(env.DISCORD_APP_ID, interaction.token);
+		const update = patchContent(env.DISCORD_APP_ID, interaction.token);
 
-	await talk(env.OPENAI_API_TOKEN, message, (content) => update(content));
+		await talk(env.OPENAI_API_TOKEN, message, (content) => update(content));
+	} catch (e) {
+		console.error(e);
+	}
 };
 
 const patchContent = (applicationId: string, interactionToken: string) => {
