@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 import type { Interaction } from "./discord/interactions";
 import type { AppBindings } from "./env";
 import { processInteraction } from "./interactions.logic";
@@ -12,10 +13,18 @@ app.post(
 		publicKey: (b) => b.DISCORD_APP_PUBLIC_KEY,
 	}),
 	async (c) => {
-		const interaction = (await c.req.json()) as Interaction;
-		return c.json(
-			await processInteraction(interaction, c.executionCtx.waitUntil, c.env),
-		);
+		try {
+			const interaction = (await c.req.json()) as Interaction;
+			return c.json(
+				await processInteraction(interaction, c.executionCtx.waitUntil, c.env),
+			);
+		} catch (e) {
+			console.error(e);
+			throw new HTTPException(500, {
+				message: "Internal Server Error",
+				cause: e,
+			});
+		}
 	},
 );
 
