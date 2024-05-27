@@ -13,7 +13,9 @@ app.post(
 	}),
 	async (c) => {
 		const interaction = (await c.req.json()) as Interaction;
-		return c.json(await processInteraction(interaction));
+		return c.json(
+			await processInteraction(interaction, c.executionCtx.waitUntil, c.env),
+		);
 	},
 );
 
