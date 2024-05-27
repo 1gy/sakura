@@ -7,10 +7,10 @@ import {
 	type PongInteractionResponse,
 } from "./discord/interactions";
 import type { AppBindings } from "./env";
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import { streamingChat } from "./openai/chat";
 
 export const talk = async (
+	openaiApiKey: string,
 	message: string,
 	callback: (content: string) => Promise<unknown>,
 ): Promise<void> => {
@@ -18,9 +18,33 @@ export const talk = async (
 		.split("\n")
 		.map((line) => `> ${line}`)
 		.join("\n");
-	await callback(`${quoted}\n\n...`);
-	await sleep(10000);
-	await callback(`${quoted}\n\nこんにちは！`);
+
+	await callback(`${quoted}\n...`);
+
+	const intervalId = setInterval(async () => {
+		await callback(`${quoted}\n\n${current}(...)`);
+	}, 500);
+
+	let current = "";
+	for await (const data of streamingChat(openaiApiKey, [
+		{
+			role: "system",
+			content: "NEW GAME!に登場する桜ねねの口調で話してください",
+		},
+		{
+			role: "user",
+			content: [
+				{
+					type: "text",
+					text: message,
+				},
+			],
+		},
+	])) {
+		current += data.choices[0]?.delta.content ?? "";
+	}
+	clearInterval(intervalId);
+	await callback(`${quoted}\n\n${current}`);
 };
 
 export const processInteraction = async (
@@ -63,7 +87,7 @@ const handleTalk = async (
 
 	const update = patchContent(env.DISCORD_APP_ID, interaction.token);
 
-	await talk(message, (content) => update(content));
+	await talk(env.OPENAI_API_TOKEN, message, (content) => update(content));
 };
 
 const patchContent = (applicationId: string, interactionToken: string) => {
