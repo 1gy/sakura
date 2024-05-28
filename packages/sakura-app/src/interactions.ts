@@ -14,10 +14,11 @@ app.post(
 	}),
 	async (c) => {
 		try {
+			const waitUntil = (promise: Promise<unknown>) => {
+				c.executionCtx.waitUntil(promise);
+			};
 			const interaction = (await c.req.json()) as Interaction;
-			return c.json(
-				await processInteraction(interaction, c.executionCtx.waitUntil, c.env),
-			);
+			return c.json(await processInteraction(interaction, waitUntil, c.env));
 		} catch (e) {
 			console.error(e);
 			throw new HTTPException(500, {
