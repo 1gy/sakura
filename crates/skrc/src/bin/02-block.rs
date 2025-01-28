@@ -5,7 +5,7 @@ enum Value<'a> {
     Block(Vec<Value<'a>>),
 }
 
-impl<'a> Value<'a> {
+impl Value<'_> {
     fn as_number(&self) -> i32 {
         match self {
             Value::Number(num) => *num,
@@ -39,7 +39,7 @@ fn parse_block<'a, 'code>(input: &'a [&'code str]) -> (Value<'code>, &'a [&'code
     (Value::Block(current_tokens), words)
 }
 
-fn run<'a>(code: &'a str) -> Vec<Value<'a>> {
+fn run(code: &str) -> Vec<Value<'_>> {
     let mut stack = Vec::new();
     let input: Vec<_> = code.split_whitespace().collect();
     let mut tokens = &input[..];
