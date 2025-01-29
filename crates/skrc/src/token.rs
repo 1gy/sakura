@@ -11,7 +11,7 @@ impl Position {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Span {
     start: u32,
     len: u32,
@@ -26,12 +26,12 @@ impl Span {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Identifier {
     pub value: String,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum LiteralKind {
     Char,
     String,
@@ -39,20 +39,20 @@ pub enum LiteralKind {
     Decimal,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Literal {
     pub kind: LiteralKind,
     pub value: String,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Delimiter {
     Parenthesis,
     Brace,
     Bracket,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TokenKind {
     Identifier(Identifier),
 
@@ -80,7 +80,7 @@ pub enum TokenKind {
     Eof,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
@@ -92,13 +92,13 @@ impl Token {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TokenTree {
     Token(Token),
-    Group(Vec<TokenTree>, Delimiter),
+    Group(Delimiter, Vec<TokenTree>),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TokenStream {
     tokens: Vec<TokenTree>,
 }

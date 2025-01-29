@@ -84,21 +84,53 @@ impl Lexer<'_> {
     }
 
     pub fn lex_token_trees(&mut self) -> super::token::TokenStream {
-        use super::token::{TokenKind, TokenStream, TokenTree};
-        let mut tokens = Vec::new();
+        use super::token::{Delimiter, TokenKind, TokenStream, TokenTree};
+
+        enum StackType {
+            Parenthesis,
+            Brace,
+            Bracket,
+            Root,
+        }
+
+        let mut stack: Vec<(StackType, Vec<TokenTree>)> = vec![(StackType::Root, Vec::new())];
+
+        // TODO: remove unwrap, panic
+
         loop {
             let token = self.next_token();
-            match token.kind {
-                TokenKind::OpenDelimiter(_delimiter) => {
-                    todo!()
+            match token.kind.clone() {
+                TokenKind::OpenDelimiter(delimiter) => {
+                    stack.push((
+                        match delimiter {
+                            Delimiter::Parenthesis => StackType::Parenthesis,
+                            Delimiter::Brace => StackType::Brace,
+                            Delimiter::Bracket => StackType::Bracket,
+                        },
+                        Vec::new(),
+                    ));
                 }
-                TokenKind::CloseDelimiter(_delimiter) => {
-                    todo!()
+                TokenKind::CloseDelimiter(delimiter) => {
+                    let (stack_type, tokens) = stack.pop().unwrap();
+                    match (stack_type, delimiter.clone()) {
+                        (StackType::Parenthesis, Delimiter::Parenthesis)
+                        | (StackType::Brace, Delimiter::Brace)
+                        | (StackType::Bracket, Delimiter::Bracket) => {
+                            let (_parent_stack_type, parent_tokens) = stack.last_mut().unwrap();
+                            parent_tokens.push(TokenTree::Group(delimiter.clone(), tokens));
+                        }
+                        _ => panic!("Mismatched delimiters"),
+                    }
                 }
                 TokenKind::Eof => {
+                    if stack.len() != 1 {
+                        panic!("Mismatched delimiters");
+                    }
+                    let (_stack_type, tokens) = stack.pop().unwrap();
                     return TokenStream::new(tokens);
                 }
                 _ => {
+                    let (_stack_type, tokens) = stack.last_mut().unwrap();
                     tokens.push(TokenTree::Token(token));
                 }
             }
@@ -251,11 +283,8 @@ mod tests {
                     Span::from_positions(Position::from_u32(6), Position::from_u32(7))
                 )),
                 TokenTree::Group(
+                    Delimiter::Parenthesis,
                     vec![
-                        TokenTree::Token(Token::new(
-                            TokenKind::OpenDelimiter(Delimiter::Parenthesis),
-                            Span::from_positions(Position::from_u32(8), Position::from_u32(9))
-                        )),
                         TokenTree::Token(Token::new(
                             TokenKind::Literal(Literal {
                                 kind: LiteralKind::Integer,
@@ -274,17 +303,38 @@ mod tests {
                             }),
                             Span::from_positions(Position::from_u32(14), Position::from_u32(15))
                         )),
-                        TokenTree::Token(Token::new(
-                            TokenKind::CloseDelimiter(Delimiter::Parenthesis),
-                            Span::from_positions(Position::from_u32(15), Position::from_u32(16))
-                        )),
-                    ],
-                    Delimiter::Parenthesis
+                    ]
                 ),
                 TokenTree::Token(Token::new(
                     TokenKind::Semicolon,
                     Span::from_positions(Position::from_u32(16), Position::from_u32(17))
                 )),
+            ])
+        );
+    }
+
+    #[test]
+    fn test_lex_token_trees_nested2() {
+        let code = "{([])[{}]}()[]";
+        let token_stream = lex_token_trees(code);
+        assert_eq!(
+            token_stream,
+            TokenStream::new(vec![
+                TokenTree::Group(
+                    Delimiter::Brace,
+                    vec![
+                        TokenTree::Group(
+                            Delimiter::Parenthesis,
+                            vec![TokenTree::Group(Delimiter::Bracket, vec![]),]
+                        ),
+                        TokenTree::Group(
+                            Delimiter::Bracket,
+                            vec![TokenTree::Group(Delimiter::Brace, vec![]),]
+                        ),
+                    ]
+                ),
+                TokenTree::Group(Delimiter::Parenthesis, vec![]),
+                TokenTree::Group(Delimiter::Bracket, vec![]),
             ])
         );
     }
