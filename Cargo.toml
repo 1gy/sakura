@@ -3,3 +3,7 @@ resolver = "2"
 members = [
     "crates/*"
 ]
+
+[workspace.dependencies]
+skrc_branded = { path = "crates/skrc_branded" }
+skrc_branded_derive = { path = "crates/skrc_branded_derive" }

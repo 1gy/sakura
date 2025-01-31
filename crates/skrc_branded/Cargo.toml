@@ -1,0 +1,7 @@
+[package]
+name = "skrc_branded"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+skrc_branded_derive = { workspace = true }
