@@ -9,13 +9,7 @@ pub struct Path {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum TypeKind {
+pub enum Type {
     Path(Path),
     // TODO: Array, Slice, ...
-}
-
-#[derive(Debug, PartialEq, Clone)]
-pub struct Type {
-    pub id: super::core::NodeId,
-    pub kind: TypeKind,
 }
