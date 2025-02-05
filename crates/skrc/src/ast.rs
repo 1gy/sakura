@@ -10,13 +10,8 @@ pub struct Identifier {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct PathSegment {
-    pub ident: Identifier,
-}
-
-#[derive(Debug, PartialEq, Clone)]
 pub struct Path {
-    pub segments: Vec<PathSegment>,
+    pub segments: Vec<Identifier>,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -122,10 +117,8 @@ mod tests {
         let _ast = Item::Function(Function {
             input: vec![FunctionArgument {
                 ty: Type::Path(Path {
-                    segments: vec![PathSegment {
-                        ident: Identifier {
-                            symbol: "u32".to_string().into(),
-                        },
+                    segments: vec![Identifier {
+                        symbol: "u32".to_string().into(),
                     }],
                 }),
                 name: Identifier {
@@ -133,10 +126,8 @@ mod tests {
                 },
             }],
             output: Type::Path(Path {
-                segments: vec![PathSegment {
-                    ident: Identifier {
-                        symbol: "String".to_string().into(),
-                    },
+                segments: vec![Identifier {
+                    symbol: "String".to_string().into(),
                 }],
             }),
             body: Block {
@@ -149,10 +140,8 @@ mod tests {
                                 left: Box::new(Expression::BinaryOperation {
                                     operator: BinaryOperator::Mod,
                                     left: Box::new(Expression::Path(Box::new(Path {
-                                        segments: vec![PathSegment {
-                                            ident: Identifier {
-                                                symbol: "i".to_string().into(),
-                                            },
+                                        segments: vec![Identifier {
+                                            symbol: "i".to_string().into(),
                                         }],
                                     }))),
                                     right: Box::new(Expression::Literal(Literal::Integer(
@@ -168,10 +157,8 @@ mod tests {
                                 left: Box::new(Expression::BinaryOperation {
                                     operator: BinaryOperator::Mod,
                                     left: Box::new(Expression::Path(Box::new(Path {
-                                        segments: vec![PathSegment {
-                                            ident: Identifier {
-                                                symbol: "i".to_string().into(),
-                                            },
+                                        segments: vec![Identifier {
+                                            symbol: "i".to_string().into(),
                                         }],
                                     }))),
                                     right: Box::new(Expression::Literal(Literal::Integer(
@@ -195,10 +182,8 @@ mod tests {
                                     left: Box::new(Expression::BinaryOperation {
                                         operator: BinaryOperator::Mod,
                                         left: Box::new(Expression::Path(Box::new(Path {
-                                            segments: vec![PathSegment {
-                                                ident: Identifier {
-                                                    symbol: "i".to_string().into(),
-                                                },
+                                            segments: vec![Identifier {
+                                                symbol: "i".to_string().into(),
                                             }],
                                         }))),
                                         right: Box::new(Expression::Literal(Literal::Integer(
@@ -221,10 +206,8 @@ mod tests {
                                             left: Box::new(Expression::BinaryOperation {
                                                 operator: BinaryOperator::Mod,
                                                 left: Box::new(Expression::Path(Box::new(Path {
-                                                    segments: vec![PathSegment {
-                                                        ident: Identifier {
-                                                            symbol: "i".to_string().into(),
-                                                        },
+                                                    segments: vec![Identifier {
+                                                        symbol: "i".to_string().into(),
                                                     }],
                                                 }))),
                                                 right: Box::new(Expression::Literal(
@@ -246,21 +229,15 @@ mod tests {
                                             statements: vec![
                                                 Statement::Expression(Expression::Path(Box::new(
                                                     Path {
-                                                        segments: vec![PathSegment {
-                                                            ident: Identifier {
-                                                                symbol: "i".to_string().into(),
-                                                            },
+                                                        segments: vec![Identifier {
+                                                            symbol: "i".to_string().into(),
                                                         }],
                                                     },
                                                 ))),
                                                 Statement::Expression(Expression::Path(Box::new(
                                                     Path {
-                                                        segments: vec![PathSegment {
-                                                            ident: Identifier {
-                                                                symbol: "to_string"
-                                                                    .to_string()
-                                                                    .into(),
-                                                            },
+                                                        segments: vec![Identifier {
+                                                            symbol: "to_string".to_string().into(),
                                                         }],
                                                     },
                                                 ))),
@@ -273,10 +250,8 @@ mod tests {
                     }),
                     Statement::Expression(Expression::Return(Some(Box::new(Expression::Path(
                         Box::new(Path {
-                            segments: vec![PathSegment {
-                                ident: Identifier {
-                                    symbol: "i".to_string().into(),
-                                },
+                            segments: vec![Identifier {
+                                symbol: "i".to_string().into(),
                             }],
                         }),
                     ))))),
