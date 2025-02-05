@@ -51,6 +51,11 @@ pub enum Expression {
         callee: Box<Expression>,
         arguments: Vec<Expression>,
     },
+    CallMethod {
+        receiver: Box<Expression>,
+        method: Identifier,
+        arguments: Vec<Expression>,
+    },
     If {
         condition: Box<Expression>,
         then_branch: Box<Block>,
@@ -171,9 +176,11 @@ mod tests {
                             }),
                         }),
                         then_branch: Box::new(Block {
-                            statements: vec![Statement::Expression(Expression::Literal(
-                                Literal::String("FizzBuzz".to_string().into()),
-                            ))],
+                            statements: vec![Statement::Expression(Expression::Return(Some(
+                                Box::new(Expression::Literal(Literal::String(
+                                    "FizzBuzz".to_string().into(),
+                                ))),
+                            )))],
                         }),
                         else_branch: Some(Block {
                             statements: vec![Statement::Expression(Expression::If {
@@ -220,28 +227,29 @@ mod tests {
                                         }),
                                         then_branch: Box::new(Block {
                                             statements: vec![Statement::Expression(
-                                                Expression::Literal(Literal::String(
-                                                    "Buzz".to_string().into(),
-                                                )),
+                                                Expression::Return(Some(Box::new(
+                                                    Expression::Literal(Literal::String(
+                                                        "Buzz".to_string().into(),
+                                                    )),
+                                                ))),
                                             )],
                                         }),
                                         else_branch: Some(Block {
-                                            statements: vec![
-                                                Statement::Expression(Expression::Path(Box::new(
-                                                    Path {
-                                                        segments: vec![Identifier {
-                                                            symbol: "i".to_string().into(),
-                                                        }],
+                                            statements: vec![Statement::Expression(
+                                                Expression::CallMethod {
+                                                    receiver: Box::new(Expression::Path(Box::new(
+                                                        Path {
+                                                            segments: vec![Identifier {
+                                                                symbol: "i".to_string().into(),
+                                                            }],
+                                                        },
+                                                    ))),
+                                                    method: Identifier {
+                                                        symbol: "to_string".to_string().into(),
                                                     },
-                                                ))),
-                                                Statement::Expression(Expression::Path(Box::new(
-                                                    Path {
-                                                        segments: vec![Identifier {
-                                                            symbol: "to_string".to_string().into(),
-                                                        }],
-                                                    },
-                                                ))),
-                                            ],
+                                                    arguments: vec![],
+                                                },
+                                            )],
                                         }),
                                     })],
                                 }),
